@@ -1,24 +1,40 @@
-import db from "../database/database";
-import { Cliente } from "../model/cliente";
+import { app } from "../server";
+import { ClienteRepository } from "../repositories/clienteRepository";
 
-export class ClienteRepository {
-  salvar(cliente: Cliente): Cliente {
-    const resultado = db
-      .prepare("INSERT INTO clientes (numero, email) VALUES (?, ?)")
-      .run(cliente.numero, cliente.email);
+export function clienteController() {
+  const repository = new ClienteRepository();
 
-    return { id: Number(resultado.lastInsertRowid), numero: cliente.numero, email: cliente.email };
-  }
+  app.get("/clientes", (req, res) => {
+    const { email } = req.query;
 
-  listar(): Cliente[] {
-    return db.prepare("SELECT * FROM cliente").all() as Cliente[];
-  }
+    if (email) {
+      const cliente = repository.buscarPorEmail(email as string);
+      if (!cliente) return res.status(404).json({ erro: "Cliente não encontrado" });
+      return res.json(cliente);
+    }
 
-  buscarPorId(id: number): Cliente | null {
-    return (db.prepare("SELECT * FROM cliente WHERE id = ?").get(id) as Cliente) ?? null;
-  }
+    res.json(repository.listar());
+  });
 
-  buscarPorEmail(email: string): Cliente | null {
-    return (db.prepare("SELECT * FROM cliente WHERE nome LIKE ?").get(`%${email}%`) as Cliente) ?? null;
-  }
+  app.get("/clientes/:id", (req, res) => {
+    const id = parseInt(req.params.id);
+    const cliente = repository.buscarPorId(id);
+    if (!cliente) return res.status(404).json({ erro: "Cliente não encontrado" });
+    res.json(cliente);
+  });
+
+  app.post("/clientes", (req, res) => {
+    try {
+      const { numero, email } = req.body;
+
+      if (!numero || numero.trim().length === 0) throw new Error("Numero é obrigatório");
+      if (!email || !email.includes("@")) throw new Error("Email inválido");
+
+      const cliente = repository.salvar({ numero, email });
+      res.status(201).json(cliente);
+    } catch (err) {
+      const mensagem = err instanceof Error ? err.message : "Erro interno";
+      res.status(400).json({ erro: mensagem });
+    }
+  });
 }

@@ -5,9 +5,9 @@ export class estoque_relatorioRepository {
   salvar(estoque_relatorio: estoque_relatorio): estoque_relatorio {
     const resultado = db
       .prepare("INSERT INTO estoque_relatorio (entrada_de_mercadoria, saida_para_troca, saida_venda, registro_movimentacao ) VALUES (?, ?, ?, ?)")
-      .run(estoque_relatorio.entrada_de_mercadoria, estoque_relatorio.saida_para_troca, estoque_relatorio.saida_venda, estoque_relatorio.registro_movimentacao );
+      .run(estoque_relatorio.entrada_mercadoria, estoque_relatorio.saida_de_troca, estoque_relatorio.saida_venda, estoque_relatorio.registro_movimentacao );
 
-    return { id: Number(resultado.lastInsertRowid), entrada_mercadoria: estoque_relatorio.entrada_de_mercadoria, saida_de_troca: estoque_relatorio.saida_de_troca, saida_venda: estoque_relatorio.saida_venda, registro_movimentacao: estoque_relatorio.registro_movimentacao };
+    return { id: Number(resultado.lastInsertRowid), entrada_mercadoria: estoque_relatorio.entrada_mercadoria, saida_de_troca: estoque_relatorio.saida_de_troca, saida_venda: estoque_relatorio.saida_venda, registro_movimentacao: estoque_relatorio.registro_movimentacao };
   }
 
   listar(): estoque_relatorio[] {

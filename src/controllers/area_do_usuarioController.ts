@@ -1,25 +1,51 @@
-import db from "../database/database";
-import { AreaDoUsuario } from "../model/area_do_usuario";
+import { app } from "../server";
+import { AreaDoUsuarioRepository } from "../repositories/area_do_usuarioRepository";
 
-export class AreaDoUsuarioRepository {
-  salvar(AreaDoUsuario: AreaDoUsuario): AreaDoUsuario {
-    const resultado = db
-      .prepare("INSERT INTO area_do_usuario (localizacao, nome, numero_de_telefone,cep, rua_avenida, numero_de_casa) VALUES (?, ?, ?, ?, ?, ?)")
-      .run(AreaDoUsuario.localizacao, AreaDoUsuario.nome, AreaDoUsuario.numero_de_telefone, AreaDoUsuario.Cep, AreaDoUsuario.rua_avenida, AreaDoUsuario.numero_de_casa);
+export function areaDoUsuarioController() {
+  const repository = new AreaDoUsuarioRepository();
 
-    return { id: Number(resultado.lastInsertRowid), localizacao: AreaDoUsuario.localizacao, nome: AreaDoUsuario.nome, numero_de_telefone: area_do_usuario.numero_de_telefone, cep: AreaDoUsuario.cep, rua_avenida: AreaDoUsuarioRepository.rua_avenida, 
-       };
-  }
+  app.get("/areas-do-usuario", (req, res) => {
+    const { localizacao } = req.query;
 
-  listar(): AreaDoUsuario[] {
-    return db.prepare("SELECT * FROM area_do_usuario").all() as AreaDoUsuario[];
-  }
+    if (localizacao) {
+      const areaDoUsuario = repository.buscarPorLocalizacao(localizacao as string);
+      if (!areaDoUsuario) return res.status(404).json({ erro: "Area do usuario nao encontrada" });
+      return res.json(areaDoUsuario);
+    }
 
-  buscarPorId(id: number): AreaDoUsuario | null {
-    return (db.prepare("SELECT * FROM area_do_usuario WHERE id = ?").get(id) as AreaDoUsuario) ?? null;
-  }
+    res.json(repository.listar());
+  });
 
-  buscarPorLocalizacao(localizacao: string): AreaDoUsuario | null {
-    return (db.prepare("SELECT * FROM area_do_usuario WHERE nome LIKE ?").get(`%${localizacao}%`) as AreaDoUsuario) ?? null;
-  }
+  app.get("/areas-do-usuario/:id", (req, res) => {
+    const id = parseInt(req.params.id);
+    const areaDoUsuario = repository.buscarPorId(id);
+    if (!areaDoUsuario) return res.status(404).json({ erro: "Area do usuario nao encontrada" });
+    res.json(areaDoUsuario);
+  });
+
+  app.post("/areas-do-usuario", (req, res) => {
+    try {
+      const { localizacao, nome, numero_de_telefone, Cep, rua_avenida, numero_de_casa } = req.body;
+
+      if (!localizacao || localizacao.trim().length === 0) throw new Error("Localizacao e obrigatoria");
+      if (!nome || nome.trim().length === 0) throw new Error("Nome e obrigatorio");
+      if (numero_de_telefone === undefined || Number.isNaN(Number(numero_de_telefone))) throw new Error("Numero de telefone invalido");
+      if (Cep === undefined || Number.isNaN(Number(Cep))) throw new Error("Cep invalido");
+      if (!rua_avenida || rua_avenida.trim().length === 0) throw new Error("Rua ou avenida e obrigatoria");
+      if (numero_de_casa === undefined || Number.isNaN(Number(numero_de_casa))) throw new Error("Numero de casa invalido");
+
+      const areaDoUsuario = repository.salvar({
+        localizacao,
+        nome,
+        numero_de_telefone: Number(numero_de_telefone),
+        Cep: Number(Cep),
+        rua_avenida,
+        numero_de_casa: Number(numero_de_casa),
+      });
+      res.status(201).json(areaDoUsuario);
+    } catch (err) {
+      const mensagem = err instanceof Error ? err.message : "Erro interno";
+      res.status(400).json({ erro: mensagem });
+    }
+  });
 }

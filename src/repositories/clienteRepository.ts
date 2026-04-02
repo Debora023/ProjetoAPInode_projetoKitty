@@ -19,6 +19,6 @@ export class ClienteRepository {
   }
 
   buscarPorEmail(email: string): Cliente | null {
-    return (db.prepare("SELECT * FROM cliente WHERE nome LIKE ?").get(`%${email}%`) as Cliente) ?? null;
+    return (db.prepare("SELECT * FROM cliente WHERE email LIKE ?").get(`%${email}%`) as Cliente) ?? null;
   }
 }

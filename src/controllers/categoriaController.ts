@@ -1,24 +1,40 @@
-import db from "../database/database";
-import { categoria } from "../model/categoria";
+import { app } from "../server";
+import { CategoriaRepository } from "../repositories/CategoriaRepository";
 
-export class CategoriaRepository {
-  salvar(categoria: categoria): categoria {
-    const resultado = db
-      .prepare("INSERT INTO categoria (nome, descricao) VALUES (?, ?)")
-      .run(categoria.nome, categoria.descricao);
+export function categoriaController() {
+  const repository = new CategoriaRepository();
 
-    return { id: Number(resultado.lastInsertRowid), nome: categoria.nome, descricao: categoria.descricao };
-  }
+  app.get("/categorias", (req, res) => {
+    const { nome } = req.query;
 
-  listar(): categoria[] {
-    return db.prepare("SELECT * FROM categoria").all() as categoria[];
-  }
+    if (nome) {
+      const categoria = repository.buscarPorNome(nome as string);
+      if (!categoria) return res.status(404).json({ erro: "Categoria nao encontrada" });
+      return res.json(categoria);
+    }
 
-  buscarPorId(id: number): categoria | null {
-    return (db.prepare("SELECT * FROM categoria WHERE id = ?").get(id) as categoria) ?? null;
-  }
+    res.json(repository.listar());
+  });
 
-  buscarPorNome(nome: string): categoria | null {
-    return (db.prepare("SELECT * FROM categoria WHERE nome LIKE ?").get(`%${nome}%`) as categoria) ?? null;
-  }
+  app.get("/categorias/:id", (req, res) => {
+    const id = parseInt(req.params.id);
+    const categoria = repository.buscarPorId(id);
+    if (!categoria) return res.status(404).json({ erro: "Categoria nao encontrada" });
+    res.json(categoria);
+  });
+
+  app.post("/categorias", (req, res) => {
+    try {
+      const { nome, descricao } = req.body;
+
+      if (!nome || nome.trim().length === 0) throw new Error("Nome e obrigatorio");
+      if (!descricao || descricao.trim().length === 0) throw new Error("Descricao e obrigatoria");
+
+      const categoria = repository.salvar({ nome, descricao });
+      res.status(201).json(categoria);
+    } catch (err) {
+      const mensagem = err instanceof Error ? err.message : "Erro interno";
+      res.status(400).json({ erro: mensagem });
+    }
+  });
 }
