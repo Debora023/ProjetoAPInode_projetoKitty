@@ -1,40 +1,24 @@
-import { app } from "../server";
-import { clienteRepository } from "../repositories/clienteRepository";
+import db from "../database/database";
+import { Cliente } from "../model/cliente";
 
-export function clienteController() {
-  const repository = new clienteRepository();
+export class ClienteRepository {
+  salvar(cliente: Cliente): Cliente {
+    const resultado = db
+      .prepare("INSERT INTO clientes (numero, email) VALUES (?, ?)")
+      .run(cliente.numero, cliente.email);
 
-  app.get("/clientes", (req, res) => {
-    const { nome } = req.query;
+    return { id: Number(resultado.lastInsertRowid), numero: cliente.numero, email: cliente.email };
+  }
 
-    if (nome) {
-      const cliente = repository.buscarPorNome(nome as string);
-      if (!cliente) return res.status(404).json({ erro: "Cliente não encontrado" });
-      return res.json(cliente);
-    }
+  listar(): Cliente[] {
+    return db.prepare("SELECT * FROM cliente").all() as Cliente[];
+  }
 
-    res.json(repository.listar());
-  });
+  buscarPorId(id: number): Cliente | null {
+    return (db.prepare("SELECT * FROM cliente WHERE id = ?").get(id) as Cliente) ?? null;
+  }
 
-  app.get("/clientes/:id", (req, res) => {
-    const id = parseInt(req.params.id);
-    const cliente = repository.buscarPorId(id);
-    if (!cliente) return res.status(404).json({ erro: "Cliente não encontrado" });
-    res.json(cliente);
-  });
-
-  app.post("/clientes", (req, res) => {
-    try {
-      const { nome, email } = req.body;
-
-      if (!nome || nome.trim().length === 0) throw new Error("Nome é obrigatório");
-      if (!email || !email.includes("@")) throw new Error("Email inválido");
-
-      const cliente = repository.salvar({ nome, email });
-      res.status(201).json(cliente);
-    } catch (err) {
-      const mensagem = err instanceof Error ? err.message : "Erro interno";
-      res.status(400).json({ erro: mensagem });
-    }
-  });
+  buscarPorEmail(email: string): Cliente | null {
+    return (db.prepare("SELECT * FROM cliente WHERE nome LIKE ?").get(`%${email}%`) as Cliente) ?? null;
+  }
 }
