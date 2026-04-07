@@ -1,0 +1,308 @@
+GET http://localhost:3000/areas-do-usuario
+
+
+
+
+GET http://localhost:3000/areas-do-usuario?localizacao=SP
+
+
+
+
+GET http://localhost:3000/areas-do-usuario/1
+
+
+
+
+POST http://localhost:3000/areas-do-usuario
+Content-Type: application/json
+
+{
+"localizacao": "SP",
+"nome": "Debora",
+"numero_de_telefone": "13999999999",
+"Cep": "11400000",
+"rua_avenida": "Av Brasil",
+"numero_de_casa": 123
+}
+
+GET http://localhost:3000/categorias
+
+
+
+
+GET http://localhost:3000/categorias?nome=Roupas
+
+
+
+
+GET http://localhost:3000/categorias/1
+
+
+
+
+POST http://localhost:3000/categorias
+Content-Type: application/json
+
+{
+"nome": "Roupas",
+"descricao": "Moda em geral"
+}
+
+GET http://localhost:3000/clientes
+
+
+
+
+GET http://localhost:3000/clientes?email=teste@email.com
+
+
+
+
+GET http://localhost:3000/clientes/1
+
+
+
+
+POST http://localhost:3000/clientes
+Content-Type: application/json
+
+{
+"numero": "13999999999",
+"email": "teste@email.com"
+}
+
+GET http://localhost:3000/estoques
+
+
+
+
+GET http://localhost:3000/estoques?quantidade_produto=10
+
+
+
+
+GET http://localhost:3000/estoques/1
+
+
+
+
+POST http://localhost:3000/estoques
+Content-Type: application/json
+
+{
+"quantidade_produto": 10
+}
+
+GET http://localhost:3000/estoque-relatorios
+
+
+
+
+GET http://localhost:3000/estoque-relatorios?registro_movimentacao=entrada
+
+
+
+
+GET http://localhost:3000/estoque-relatorios/1
+
+
+
+
+POST http://localhost:3000/estoque-relatorios
+Content-Type: application/json
+
+{
+"entrada_mercadoria": "2026-04-07",
+"saida_de_troca": "2026-04-08",
+"saida_venda": "2026-04-09",
+"registro_movimentacao": "Entrada de estoque"
+}
+
+GET http://localhost:3000/filtros-de-cor
+
+
+
+
+GET http://localhost:3000/filtros-de-cor?cor=azul
+
+
+
+
+GET http://localhost:3000/filtros-de-cor/1
+
+
+
+
+POST http://localhost:3000/filtros-de-cor
+Content-Type: application/json
+
+{
+"cor": "azul"
+}
+
+GET http://localhost:3000/formas-de-pagamento
+
+
+
+
+GET http://localhost:3000/formas-de-pagamento?tipo_De_pagamento=pix
+
+
+
+
+GET http://localhost:3000/formas-de-pagamento/1
+
+
+
+
+POST http://localhost:3000/formas-de-pagamento
+Content-Type: application/json
+
+{
+"tipo_De_pagamento": "pix"
+}
+
+ET http://localhost:3000/fornecedores
+
+
+
+
+GET http://localhost:3000/fornecedores?email=empresa@email.com
+
+
+
+
+GET http://localhost:3000/fornecedores/1
+
+
+
+
+POST http://localhost:3000/fornecedores
+Content-Type: application/json
+
+{
+"nome_empresa": "Empresa X",
+"cnpj": "12345678000100",
+"telefone": "13999999999",
+"email": "empresa@email.com",
+"endereco": "Rua A",
+"cidade": "Guarujá",
+"estado": "SP",
+"cep": "11400000"
+}
+
+GET http://localhost:3000/itens-pedido
+
+
+
+
+GET http://localhost:3000/itens-pedido?quantidade=2
+
+
+
+
+GET http://localhost:3000/itens-pedido/1
+
+
+
+
+POST http://localhost:3000/itens-pedido
+Content-Type: application/json
+
+{
+"quantidade": 2,
+"preco": 50
+}
+
+GET http://localhost:3000/pedidos
+
+
+
+
+GET http://localhost:3000/pedidos?subtotal=100
+
+
+
+
+GET http://localhost:3000/pedidos/1
+
+
+
+
+POST http://localhost:3000/pedidos
+Content-Type: application/json
+
+{
+"subtotal": 100,
+"frete": 20
+}
+
+GET http://localhost:3000/produtos
+
+
+
+
+GET http://localhost:3000/produtos?nome=Camisa
+
+
+
+
+GET http://localhost:3000/produtos/1
+
+
+
+
+POST http://localhost:3000/produtos
+Content-Type: application/json
+
+{
+"nome": "Camisa",
+"valor": 59.90,
+"tamanho": "M"
+}
+
+
+GET http://localhost:3000/status-pedido
+
+
+
+
+GET http://localhost:3000/status-pedido?codigo=pago
+
+
+
+
+GET http://localhost:3000/status-pedido/1
+
+
+
+
+POST http://localhost:3000/status-pedido
+Content-Type: application/json
+
+{
+"codigo": "pago"
+}
+
+GET http://localhost:3000/usuarios-adm
+
+
+
+
+GET http://localhost:3000/usuarios-adm?email=admin@email.com
+
+
+
+
+GET http://localhost:3000/usuarios-adm/1
+
+
+
+
+POST http://localhost:3000/usuarios-adm
+Content-Type: application/json
+
+{
+"email": "admin@email.com",
+"senha": "123456"
+}
